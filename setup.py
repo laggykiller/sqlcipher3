@@ -99,7 +99,7 @@ def fetch_openssl_dir(conan_info: dict) -> str:
 
 
 def quote_argument(arg):
-    q = '\\"' if sys.platform == "win32" and sys.version_info < (3, 8) else '"'
+    q = '\\"' if sys.platform == "win32" and sys.version_info < (3, 7) else '"'
     return q + arg + q
 
 define_macros = [
@@ -149,11 +149,6 @@ else:
     conan_info = install_openssl(arch)
     openssl_dir = fetch_openssl_dir(conan_info)
 
-extra_link_args = []
-if sys.platform != "win32":
-    # Include math library, required for fts5, and crypto.
-    extra_link_args.extend(["-lm", "-lcrypto"])
-
 openssl_lib_path = os.path.join(openssl_dir, "lib")
 
 # Configure the compiler
@@ -161,6 +156,7 @@ include_dirs.append(os.path.join(openssl_dir, "include"))
 define_macros.append(("inline", "__inline"))
 
 # Configure the linker
+extra_link_args = []
 if sys.platform == "win32":
     # https://github.com/openssl/openssl/blob/master/NOTES-WINDOWS.md#linking-native-applications
     extra_link_args.append("WS2_32.LIB")
@@ -170,7 +166,8 @@ if sys.platform == "win32":
     extra_link_args.append("USER32.LIB")
     extra_link_args.append("libcrypto.lib")
 else:
-    extra_link_args.append("libcrypto.a")
+    # Include math library, required for fts5, and crypto.
+    extra_link_args.extend(["-lm", "-lcrypto"])
 
 module = Extension(
     name="sqlcipher3._sqlite3",
@@ -188,15 +185,4 @@ if __name__ == "__main__":
         package_dir={"sqlcipher3": "sqlcipher3"},
         packages=["sqlcipher3"],
         ext_modules=[module],
-        classifiers=[
-            "Development Status :: 4 - Beta",
-            "Intended Audience :: Developers",
-            "License :: OSI Approved :: zlib/libpng License",
-            "Operating System :: MacOS :: MacOS X",
-            "Operating System :: Microsoft :: Windows",
-            "Operating System :: POSIX",
-            "Programming Language :: C",
-            "Programming Language :: Python",
-            "Topic :: Database :: Database Engines/Servers",
-            "Topic :: Software Development :: Libraries :: Python Modules"],
     )
