@@ -1,5 +1,8 @@
 name: Python package
-on: [push]
+on:
+  push:
+    tags:
+        - 'v*'
 
 jobs:
   prepare-sqlite:
@@ -148,17 +151,17 @@ jobs:
       with:
         path: dist/*.tar.gz
 
-  # upload-pypi:
-  #   needs: [build-wheels, build-sdist]
-  #   runs-on: ubuntu-20.04
+  upload-pypi:
+    needs: [build-wheels, build-sdist]
+    runs-on: ubuntu-20.04
 
-  #   steps:
-  #     - uses: actions/download-artifact@v3
-  #       with:
-  #         name: wheels
-  #         path: dist/
+    steps:
+      - uses: actions/download-artifact@v3
+        with:
+          name: wheels
+          path: dist/
 
-  #     - uses: pypa/gh-action-pypi-publish@release/v1
-  #       with:
-  #         user: __token__
-  #         password: ${{ secrets.pypi_password }}
+      - uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          user: __token__
+          password: ${{ secrets.pypi_password }}
