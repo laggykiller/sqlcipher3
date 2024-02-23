@@ -109,7 +109,7 @@ jobs:
         path: ./
 
     - name: Build wheels for ${{ matrix.os }} ${{ matrix.cibw_archs }} ${{ matrix.cibw_build }}
-      uses: pypa/cibuildwheel@v2.15.0
+      uses: pypa/cibuildwheel@v2.16.5
       env:
         CIBW_BUILD_FRONTEND: build
         CIBW_BUILD: ${{ matrix.cibw_build }}
@@ -130,7 +130,7 @@ jobs:
     steps:
     - uses: actions/checkout@v3
       with:
-        submodules: false
+        submodules: recursive
 
     - uses: actions/setup-python@v4
       with:
@@ -142,8 +142,7 @@ jobs:
         path: ./
 
     - name: Build sdist
-      run: |
-        python setup.py sdist
+      run: pipx run build --sdist
 
     - uses: actions/upload-artifact@v3
       with:
