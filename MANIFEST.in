@@ -2,7 +2,9 @@ include MANIFEST.in
 include README.md
 include LICENSE
 include setup.py
-include src/*.h
-include src/*.c
+recursive-include src *.h
+recursive-include src *.c
+include lipo-dir-merge/*.py
+include conanfile.py
 
 global-exclude *~ *.pyc

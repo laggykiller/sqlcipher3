@@ -1,0 +1,6 @@
+[submodule "lipo-dir-merge"]
+	path = lipo-dir-merge
+	url = https://github.com/faaxm/lipo-dir-merge.git
+[submodule "sqlcipher"]
+	path = sqlcipher
+	url = https://github.com/sqlcipher/sqlcipher.git
