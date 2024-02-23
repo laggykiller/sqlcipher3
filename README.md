@@ -2,8 +2,10 @@ sqlcipher3
 ==========
 
 *NOTICE*: This is a fork of [sqlcipher3](https://github.com/coleifer/sqlcipher3)
-which adds github action for creating wheels for Windows, MacOS and Linux. To install
-openssl easily, conan is used. I made some reference with
+which adds github action for creating wheels for Windows, MacOS and Linux.
+The unofficial wheels are uploaded to `sqlciipher3-wheel` on pypi, while the
+official wheels are `sqlcipher3-binary`.
+To install openssl easily, conan is used. I made some reference with
 [this fork of pysqlite3 by Dobatymo](https://github.com/Dobatymo/pysqlite3)
 
 *NOTICE*: To build from this fork, copy `sqlite3.c` and `sqlite3.h`
