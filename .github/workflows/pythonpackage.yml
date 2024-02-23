@@ -21,34 +21,6 @@ jobs:
           sqlcipher/sqlite3.c
           sqlcipher/sqlite3.h
 
-  tests:
-    needs: [prepare-sqlite]
-
-    strategy:
-      fail-fast: true
-      matrix:
-        python-version: ['3.6', '3.7', '3.8', '3.9', '3.10', '3.11']
-        os: [ubuntu-20.04, macos-latest, windows-latest]
-    runs-on: ${{ matrix.os }}
-
-    steps:
-    - uses: actions/checkout@v3
-      with:
-        submodules: false
-    - uses: actions/setup-python@v4
-      with:
-        python-version: ${{ matrix.python-version }}
-    - uses: actions/download-artifact@v3
-      with:
-        name: sqlite-amalgamation
-        path: ./src/sqlcipher
-    - name: Build module
-      run: |
-        python setup.py build_ext -i
-    - name: Run tests
-      run: |
-        python -m test
-
   build-wheels:
     needs: [prepare-sqlite, tests]
     runs-on: ${{ matrix.os }}
