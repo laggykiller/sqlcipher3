@@ -1,0 +1,30 @@
+[project]
+name = "sqlcipher3"
+version = "0.5.2"
+description = "DB-API 2.0 interface for SQLCipher 3.x"
+readme = { content-type = "text/markdown", file = "README.md" }
+authors = [{ name = "Charles Leifer", email = "coleifer@gmail.com" }]
+license = { text = "zlib/libpng" }
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: zlib/libpng License",
+    "Operating System :: MacOS :: MacOS X",
+    "Operating System :: Microsoft :: Windows",
+    "Operating System :: POSIX",
+    "Programming Language :: C",
+    "Programming Language :: Python",
+    "Topic :: Database :: Database Engines/Servers",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+]
+
+[project.urls]
+homepage = "https://github.com/coleifer/sqlcipher3"
+
+[build-system]
+requires = [
+    "conan>=2.0",
+    "setuptools>=45",
+    "wheel",
+]
+build-backend = "setuptools.build_meta"

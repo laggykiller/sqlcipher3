@@ -10,11 +10,6 @@ import platform
 from glob import glob
 from setuptools import setup, Extension
 
-# If you need to change anything, it should be enough to change setup.cfg.
-
-PACKAGE_NAME = 'sqlcipher3'
-VERSION = '0.5.2'
-
 # Mapping from Conan architectures to Python machine types
 CONAN_ARCHS = {
     'x86_64': ['amd64', 'x86_64', 'x64'],
@@ -28,10 +23,6 @@ CONAN_ARCHS = {
 sources = glob("src/*.c") + ["src/sqlcipher/sqlite3.c"]
 
 include_dirs = ["./src"]
-
-# define packages
-packages = [PACKAGE_NAME]
-EXTENSION_MODULE_NAME = "._sqlite3"
 
 # Work around clang raising hard error for unused arguments
 if sys.platform == "darwin":
@@ -112,7 +103,7 @@ def quote_argument(arg):
     return q + arg + q
 
 define_macros = [
-    ('MODULE_NAME', quote_argument(PACKAGE_NAME + '.dbapi2')),
+    ('MODULE_NAME', quote_argument('sqlcipher3.dbapi2')),
     ('ENABLE_FTS3', '1'),
     ('ENABLE_FTS3_PARENTHESIS', '1'),
     ('ENABLE_FTS4', '1'),
@@ -182,7 +173,7 @@ else:
     extra_link_args.append('libcrypto.a')
 
 module = Extension(
-    name=PACKAGE_NAME + EXTENSION_MODULE_NAME,
+    name="sqlcipher3._sqlite3",
     sources=sources,
     define_macros=define_macros,
     library_dirs=[openssl_lib_path],
@@ -191,22 +182,11 @@ module = Extension(
     language="c",
 )
 
-with open("README.md", "r", encoding="utf-8") as fr:
-    long_description = fr.read()
-
 if __name__ == "__main__":
     setup(
-        name=PACKAGE_NAME,
-        version=VERSION,
-        description="DB-API 2.0 interface for SQLCipher 3.x",
-        long_description=long_description,
-        author="Charles Leifer",
-        author_email="coleifer@gmail.com",
-        license="zlib/libpng",
         platforms="ALL",
-        url="https://github.com/coleifer/sqlcipher3",
-        package_dir={PACKAGE_NAME: "sqlcipher3"},
-        packages=packages,
+        package_dir={'sqlcipher3': "sqlcipher3"},
+        packages=['sqlcipher3'],
         ext_modules=[module],
         classifiers=[
             "Development Status :: 4 - Beta",
