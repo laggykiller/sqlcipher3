@@ -6,8 +6,8 @@ which adds github action for creating wheels for Windows, MacOS and Linux. To in
 openssl easily, conan is used. I made some reference with
 [this fork of pysqlite3 by Dobatymo](https://github.com/Dobatymo/pysqlite3)
 
-*NOTICE*: To build from this fork, you only need to run `pip wheel .` or
-`python -m build .`
+*NOTICE*: To build from this fork, copy `sqlite3.c` and `sqlite3.h`
+to `src/sqlcipher`, then run `pip wheel .` or `python -m build .`
 
 This library takes [pysqlite3](https://github.com/coleifer/pysqlite3) and makes
 some small modifications so it is suitable for use with
