@@ -22,7 +22,7 @@ jobs:
           sqlcipher/sqlite3.h
 
   build-wheels:
-    needs: [prepare-sqlite, tests]
+    needs: [prepare-sqlite]
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -124,7 +124,7 @@ jobs:
         retention-days: 7
 
   build-sdist:
-    needs: [prepare-sqlite, tests]
+    needs: [prepare-sqlite]
     runs-on: ubuntu-20.04
 
     steps:
