@@ -146,9 +146,11 @@ if arch == "universal2":
     add_deps(conan_info_x64, library_dirs, include_dirs)
     conan_info_arm = install_openssl("armv8")
     add_deps(conan_info_arm, library_dirs, include_dirs)
+    zlib_required = check_zlib_required(conan_info_x64)
 else:
     conan_info = install_openssl(arch)
     add_deps(conan_info, library_dirs, include_dirs)
+    zlib_required = check_zlib_required(conan_info)
 
 # Configure the linker
 extra_link_args = []
@@ -159,7 +161,7 @@ if sys.platform == "win32":
     extra_link_args.append("ADVAPI32.LIB")
     extra_link_args.append("CRYPT32.LIB")
     extra_link_args.append("USER32.LIB")
-    if check_zlib_required(conan_info):
+    if zlib_required:
         extra_link_args.append("zlib.lib")
     extra_link_args.append("libcrypto.lib")
 else:
