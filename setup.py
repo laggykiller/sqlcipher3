@@ -22,6 +22,7 @@ CONAN_ARCHS = {
 # define sqlite sources
 sources = glob("src/*.c") + ["src/sqlcipher/sqlite3.c"]
 
+library_dirs = []
 include_dirs = ["./src"]
 
 # Work around clang raising hard error for unused arguments
@@ -54,7 +55,7 @@ def get_arch() -> str:
 def install_openssl(arch: str) -> dict:
     """Install openssl using Conan.
     """
-    settings = []
+    settings: list[str] = []
 
     if platform.system() == "Windows":
         settings.append("os=Windows")
@@ -90,13 +91,25 @@ def install_openssl(arch: str) -> dict:
 
     return conan_info
 
-def fetch_openssl_dir(conan_info: dict) -> str:
-    """Find directory of openssl.
+def add_deps(conan_info: dict, library_dirs: list, include_dirs: list):
+    """Find directories of dependencies.
     """
     for dep in conan_info["graph"]["nodes"].values():
-        if dep.get("name") == "openssl":
-            return dep.get("package_folder")
+        package_folder = dep.get("package_folder")
+        if package_folder is None:
+            continue
 
+        library_dirs.append(os.path.join(package_folder, "lib"))
+        include_dirs.append(os.path.join(package_folder, "include"))
+
+def check_zlib_required(conan_info: dict) -> bool:
+    """Check if zlib is required (openssl3)
+    """
+    for dep in conan_info["graph"]["nodes"].values():
+        if dep.get("name") == "zlib":
+            return True
+    
+    return False
 
 def quote_argument(arg):
     q = '\\"' if sys.platform == "win32" and sys.version_info < (3, 7) else '"'
@@ -124,36 +137,19 @@ define_macros = [
     # Additional nice-to-have.
     ("SQLITE_DEFAULT_PAGE_SIZE", "4096"),
     ("SQLITE_DEFAULT_CACHE_SIZE", "-8000"),
+    ("inline", "__inline"),
 ]
 
+# Configure the compiler
 arch = get_arch()
 if arch == "universal2":
     conan_info_x64 = install_openssl("x86_64")
-    openssl_dir_x64 = fetch_openssl_dir(conan_info_x64)
+    add_deps(conan_info_x64, library_dirs, include_dirs)
     conan_info_arm = install_openssl("armv8")
-    openssl_dir_arm = fetch_openssl_dir(conan_info_arm)
-    openssl_dir_universal2 = openssl_dir_arm.replace("armv8", "universal2")
-    subprocess.run(
-        [
-            "python3",
-            "./lipo-dir-merge/lipo-dir-merge.py",
-            openssl_dir_x64,
-            openssl_dir_arm,
-            openssl_dir_universal2
-        ]
-    )
-    shutil.rmtree(openssl_dir_x64)
-    shutil.move(openssl_dir_universal2, openssl_dir_x64)
-    openssl_dir = openssl_dir_x64
+    add_deps(conan_info_arm, library_dirs, include_dirs)
 else:
     conan_info = install_openssl(arch)
-    openssl_dir = fetch_openssl_dir(conan_info)
-
-openssl_lib_path = os.path.join(openssl_dir, "lib")
-
-# Configure the compiler
-include_dirs.append(os.path.join(openssl_dir, "include"))
-define_macros.append(("inline", "__inline"))
+    add_deps(conan_info, library_dirs, include_dirs)
 
 # Configure the linker
 extra_link_args = []
@@ -164,6 +160,8 @@ if sys.platform == "win32":
     extra_link_args.append("ADVAPI32.LIB")
     extra_link_args.append("CRYPT32.LIB")
     extra_link_args.append("USER32.LIB")
+    if check_zlib_required(conan_info):
+        extra_link_args.append("zlib.lib")
     extra_link_args.append("libcrypto.lib")
 else:
     # Include math library, required for fts5, and crypto.
@@ -173,7 +171,7 @@ module = Extension(
     name="sqlcipher3._sqlite3",
     sources=sources,
     define_macros=define_macros,
-    library_dirs=[openssl_lib_path],
+    library_dirs=library_dirs,
     include_dirs=include_dirs,
     extra_link_args=extra_link_args,
     language="c",

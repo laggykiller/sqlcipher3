@@ -4,7 +4,6 @@ include LICENSE
 include setup.py
 recursive-include src *.h
 recursive-include src *.c
-include lipo-dir-merge/*.py
 include conanfile.py
 
 global-exclude *~ *.pyc
