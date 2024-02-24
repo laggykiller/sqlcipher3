@@ -106,6 +106,12 @@ jobs:
       with:
         python-version: 3.8
 
+    - name: Set up QEMU
+      if: runner.os == 'Linux'
+      uses: docker/setup-qemu-action@v2
+      with:
+        platforms: all
+
     - uses: actions/download-artifact@v3
       with:
         name: sqlite-amalgamation
