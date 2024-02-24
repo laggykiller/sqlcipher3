@@ -2,7 +2,6 @@
 # setup.py: the distutils script
 #
 import os
-import shutil
 import subprocess
 import json
 import sys
