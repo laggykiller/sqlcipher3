@@ -3,13 +3,30 @@ sqlcipher3
 
 *NOTICE*: This is a fork of [sqlcipher3](https://github.com/coleifer/sqlcipher3)
 which adds github action for creating wheels for Windows, MacOS and Linux.
-The unofficial wheels from this fork are uploaded to `sqlciipher3-wheel` on pypi,
+The unofficial wheels from this fork are uploaded to `sqlcipher3-wheels` on pypi,
 while the official wheels are `sqlcipher3-binary`.
 To install openssl easily, conan is used. I made some reference with
 [this fork of pysqlite3 by Dobatymo](https://github.com/Dobatymo/pysqlite3)
 
 *NOTICE*: To build from this fork, copy `sqlite3.c` and `sqlite3.h`
 to `src/sqlcipher`, then run `pip wheel .` or `python -m build .`
+
+*NOTICE*: The wheels are built with sqlcipher version 4. You have to execute
+`PRAGMA cipher_compatibility = 3` before doing any operations on a database
+encrypted with SQLCipher version 3 when a newer version is installed.
+Keep in mind, you have to add `PRAGMA cipher_compatibility` after `PRAGMA key`:
+
+```python
+from sqlcipher3 import dbapi2 as sqlite
+conn = sqlite.connect('test.db')
+c = conn.cursor()
+c.execute("PRAGMA key='password'")
+c.execute("PRAGMA cipher_compatibility = 3")
+c.execute('''create table stocks (date text, trans text, symbol text, qty real, price real)''')
+c.execute("""insert into stocks values ('2006-01-05','BUY','RHAT',100,35.14)""")
+conn.commit()
+c.close()
+```
 
 This library takes [pysqlite3](https://github.com/coleifer/pysqlite3) and makes
 some small modifications so it is suitable for use with

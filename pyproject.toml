@@ -19,7 +19,7 @@ classifiers = [
 ]
 
 [project.urls]
-homepage = "https://github.com/coleifer/sqlcipher3"
+homepage = "https://github.com/laggykiller/sqlcipher3"
 
 [build-system]
 requires = [
