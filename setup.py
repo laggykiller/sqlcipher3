@@ -111,7 +111,16 @@ def check_zlib_required(conan_info: dict) -> bool:
     return False
 
 def quote_argument(arg):
-    q = '\\"' if sys.platform == "win32" and sys.version_info < (3, 7) else '"'
+    is_cibuildwheel = os.environ.get("CIBUILDWHEEL", "0") == "1"
+
+    if sys.platform == "win32" and (
+        (is_cibuildwheel and sys.version_info < (3, 7))
+        or (not is_cibuildwheel and sys.version_info < (3, 9))
+    ):
+        q = '\\"'
+    else:
+        q = '"'
+
     return q + arg + q
 
 if __name__ == "__main__":
@@ -180,5 +189,8 @@ if __name__ == "__main__":
     )
 
     setup(
+        # name and version for building python 3.6 wheel
+        name="sqlcipher3",
+        version="0.5.2",
         ext_modules=[module],
     )
