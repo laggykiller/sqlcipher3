@@ -190,7 +190,7 @@ if __name__ == "__main__":
 
     setup(
         # name and version for building python 3.6 wheel
-        name="sqlcipher3",
+        name="sqlcipher3-wheels",
         version="0.5.2",
         ext_modules=[module],
     )
