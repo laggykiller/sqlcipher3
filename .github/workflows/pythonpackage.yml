@@ -46,36 +46,17 @@ jobs:
 
     - name: Build sdist
       run: pipx run build --sdist
+    
+    - name: Test sdist
+      run: |
+        python -m pip install dist/sqlcipher3-wheels-*.tar.gz
+        mv sqlcipher3 sqlcipher3_
+        python -m test
+        mv sqlcipher3_ sqlcipher3
 
     - uses: actions/upload-artifact@v3
       with:
-        name: sdist
         path: dist/sqlcipher3-wheels-*.tar.gz
-
-  test-sdist:
-    needs: build-sdist
-    runs-on: ubuntu-20.04
-
-    steps:
-      - name: Fetch source distribution
-        uses: actions/download-artifact@v3
-        with:
-          name: sdist
-          path: dist/
-
-      - uses: actions/setup-python@v4
-        with:
-          python-version: 3.8
-
-      - name: Install the package
-        run: |
-          python -m pip install dist/sqlcipher3-wheels-*.tar.gz
-
-      - name: Test
-        run: |
-          mv sqlcipher3 sqlcipher3_
-          python -m test
-          mv sqlcipher3_ sqlcipher3
 
   build-wheels:
     needs: prepare-sqlite
@@ -183,22 +164,16 @@ jobs:
 
     - uses: actions/upload-artifact@v3
       with:
-        name: wheels
         path: ./wheelhouse/*.whl
 
   upload-pypi:
-    needs: [build-wheels, test-sdist]
+    needs: [build-wheels, build-sdist]
     runs-on: ubuntu-20.04
 
     steps:
       - uses: actions/download-artifact@v3
         with:
-          name: sdist
-          path: dist
-
-      - uses: actions/download-artifact@v3
-        with:
-          name: wheels
+          name: artifact
           path: dist
 
       - uses: pypa/gh-action-pypi-publish@release/v1
