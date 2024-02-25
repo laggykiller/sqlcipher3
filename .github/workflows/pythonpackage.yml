@@ -51,7 +51,7 @@ jobs:
       run: |
         python -m pip install dist/sqlcipher3-wheels-*.tar.gz
         mv sqlcipher3 sqlcipher3_ &&
-        python -m test &&
+        python -m unittest &&
         mv sqlcipher3_ sqlcipher3
 
     - uses: actions/upload-artifact@v3
@@ -159,7 +159,7 @@ jobs:
         CIBW_ENVIRONMENT: SQLCIPHER3_COMPILE_TARGET=${{ matrix.compile_target }}
         CIBW_TEST_COMMAND: >
           mv {project}/sqlcipher3 {project}/sqlcipher3_ &&
-          python -m unittest discover -t {project} -s test -p *.py &&
+          python -m unittest discover -s {project} &&
           mv {project}/sqlcipher3_ {project}/sqlcipher3
 
     - uses: actions/upload-artifact@v3
