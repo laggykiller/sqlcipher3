@@ -42,7 +42,7 @@ jobs:
     - uses: actions/download-artifact@v3
       with:
         name: sqlite-amalgamation
-        path: ./
+        path: ./src/sqlcipher
 
     - name: Build sdist
       run: pipx run build --sdist
