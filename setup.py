@@ -189,8 +189,11 @@ if __name__ == "__main__":
     )
 
     setup(
-        # name and version for building python 3.6 wheel
+        # With pyproject.toml, all are not necessary except ext_modules
+        # However, they are kept for building python 3.6 wheels
         name="sqlcipher3-wheels",
         version="0.5.2.post0",
+        package_dir={"sqlcipher3-wheels": "sqlcipher3"},
+        packages=["sqlcipher3-wheels"],
         ext_modules=[module],
     )

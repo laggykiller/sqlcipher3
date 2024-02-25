@@ -50,9 +50,9 @@ jobs:
     - name: Test sdist
       run: |
         python -m pip install dist/sqlcipher3-wheels-*.tar.gz
-        mv {project}/sqlcipher3 {project}/sqlcipher3_ &&
-        python -m unittest discover -t {project} -s test -p *.py &&
-        mv {project}/sqlcipher3_ {project}/sqlcipher3
+        mv sqlcipher3 sqlcipher3_ &&
+        python -m test &&
+        mv sqlcipher3_ sqlcipher3
 
     - uses: actions/upload-artifact@v3
       with:
