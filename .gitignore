@@ -4,3 +4,4 @@ dist/*
 sqlcipher3.egg-info/*
 _sqlite*.so
 conan_output/*
+__pycache__

@@ -12,11 +12,13 @@ jobs:
     - uses: actions/checkout@v3
       with:
         submodules: true
+
     - if: steps.sqlite-amalgamation.outputs.cache-hit != 'true'
       run: |
         cd sqlcipher/
         LIBS="-lm" ./configure --disable-tcl --enable-tempstore=always
         make sqlite3.c
+
     - uses: actions/upload-artifact@v3
       with:
         name: sqlite-amalgamation
@@ -24,8 +26,59 @@ jobs:
           sqlcipher/sqlite3.c
           sqlcipher/sqlite3.h
 
+  build-sdist:
+    needs: prepare-sqlite
+    runs-on: ubuntu-20.04
+
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        submodules: false
+
+    - uses: actions/setup-python@v4
+      with:
+        python-version: 3.8
+
+    - uses: actions/download-artifact@v3
+      with:
+        name: sqlite-amalgamation
+        path: ./
+
+    - name: Build sdist
+      run: pipx run build --sdist
+
+    - uses: actions/upload-artifact@v3
+      with:
+        name: sdist
+        path: dist/sqlcipher3_wheels-*.tar.gz
+
+  test-sdist:
+    needs: build-sdist
+    runs-on: ubuntu-20.04
+
+    steps:
+      - name: Fetch source distribution
+        uses: actions/download-artifact@v3
+        with:
+          name: sdist
+          path: dist/
+
+      - uses: actions/setup-python@v4
+        with:
+          python-version: 3.8
+
+      - name: Install the package
+        run: |
+          python -m pip install dist/sqlcipher3_wheels-*.tar.gz
+
+      - name: Test
+        run: |
+          mv sqlcipher3 sqlcipher3_
+          python -m test
+          mv sqlcipher3_ sqlcipher3
+
   build-wheels:
-    needs: [prepare-sqlite]
+    needs: prepare-sqlite
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -99,7 +152,7 @@ jobs:
     steps:
     - uses: actions/checkout@v3
       with:
-        submodules: true
+        submodules: false
 
     - uses: actions/setup-python@v4
       with:
@@ -123,44 +176,29 @@ jobs:
         CIBW_BUILD: ${{ matrix.cibw_build }}
         CIBW_ARCHS: ${{ matrix.cibw_archs }}
         CIBW_ENVIRONMENT: SQLCIPHER3_COMPILE_TARGET=${{ matrix.compile_target }}
+        CIBW_TEST_COMMAND: >
+          mv sqlcipher3 sqlcipher3_ &&
+          python -m test &&
+          mv sqlcipher3_ sqlcipher3
 
     - uses: actions/upload-artifact@v3
       with:
+        name: wheels
         path: ./wheelhouse/*.whl
 
-  build-sdist:
-    needs: [prepare-sqlite]
-    runs-on: ubuntu-20.04
-
-    steps:
-    - uses: actions/checkout@v3
-      with:
-        submodules: true
-
-    - uses: actions/setup-python@v4
-      with:
-        python-version: 3.8
-
-    - uses: actions/download-artifact@v3
-      with:
-        name: sqlite-amalgamation
-        path: ./
-
-    - name: Build sdist
-      run: pipx run build --sdist
-
-    - uses: actions/upload-artifact@v3
-      with:
-        path: dist/*.tar.gz
-
   upload-pypi:
-    needs: [build-wheels, build-sdist]
+    needs: [build-wheels, test-sdist]
     runs-on: ubuntu-20.04
 
     steps:
       - uses: actions/download-artifact@v3
         with:
-          name: artifact
+          name: sdist
+          path: dist
+
+      - uses: actions/download-artifact@v3
+        with:
+          name: wheels
           path: dist
 
       - uses: pypa/gh-action-pypi-publish@release/v1
