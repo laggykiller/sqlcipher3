@@ -76,7 +76,7 @@ def install_openssl(arch: str) -> dict:
         # Need to compile openssl if musllinux
         build.append("openssl*")
 
-    subprocess.run(["conan", "profile", "detect"])
+    subprocess.run(["conan", "profile", "detect", "-f"])
 
     conan_output = os.path.join("conan_output", arch)
 
