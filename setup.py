@@ -169,9 +169,13 @@ if __name__ == "__main__":
         if arch.endswith("x86_64"):
             lipo_dir_merge_src = conan_build_folder_x64
             lipo_dir_merge_dst = conan_build_folder_arm
+            library_dirs = library_dirs_x64
+            include_dirs = include_dirs_x64
         elif arch.endswith("armv8"):
             lipo_dir_merge_src = conan_build_folder_arm
             lipo_dir_merge_dst = conan_build_folder_x64
+            library_dirs = library_dirs_arm
+            include_dirs = include_dirs_arm
         else:
             raise RuntimeError("Invalid arch: " + arch)
 
