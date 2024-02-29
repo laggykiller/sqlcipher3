@@ -5,9 +5,11 @@ import os
 import subprocess
 import json
 import sys
+import shutil
 import platform
 from glob import glob
 from setuptools import setup, Extension
+from typing import Any, Optional
 
 # Mapping from Conan architectures to Python machine types
 CONAN_ARCHS = {
@@ -51,7 +53,7 @@ def get_arch() -> str:
     raise RuntimeError("Unable to determine the compilation target architecture")
 
 
-def install_openssl(arch: str) -> dict:
+def install_openssl(arch: str) -> "dict[Any, Any]":
     """Install openssl using Conan.
     """
     settings: list[str] = []
@@ -90,9 +92,11 @@ def install_openssl(arch: str) -> dict:
 
     return conan_info
 
-def add_deps(conan_info: dict, library_dirs: list, include_dirs: list):
+def add_deps(conan_info: "dict[Any, Any]") -> "tuple[list[str], list[str]]":
     """Find directories of dependencies.
     """
+    library_dirs: list[str] = []
+    include_dirs: list[str] = []
     for dep in conan_info["graph"]["nodes"].values():
         package_folder = dep.get("package_folder")
         if package_folder is None:
@@ -100,8 +104,10 @@ def add_deps(conan_info: dict, library_dirs: list, include_dirs: list):
 
         library_dirs.append(os.path.join(package_folder, "lib"))
         include_dirs.append(os.path.join(package_folder, "include"))
+    
+    return library_dirs, include_dirs
 
-def check_zlib_required(conan_info: dict) -> bool:
+def check_zlib_required(conan_info: "dict[Any, Any]") -> bool:
     """Check if zlib is required (openssl3)
     """
     for dep in conan_info["graph"]["nodes"].values():
@@ -110,7 +116,7 @@ def check_zlib_required(conan_info: dict) -> bool:
     
     return False
 
-def quote_argument(arg):
+def quote_argument(arg: str) -> str:
     is_cibuildwheel = os.environ.get("CIBUILDWHEEL", "0") == "1"
 
     if sys.platform == "win32" and (
@@ -124,7 +130,7 @@ def quote_argument(arg):
     return q + arg + q
 
 if __name__ == "__main__":
-    define_macros = [
+    define_macros: "list[tuple[str, Optional[str]]]" = [
         ("MODULE_NAME", quote_argument("sqlcipher3.dbapi2")),
         ("ENABLE_FTS3", "1"),
         ("ENABLE_FTS3_PARENTHESIS", "1"),
@@ -153,17 +159,44 @@ if __name__ == "__main__":
     arch = get_arch()
     if arch == "universal2":
         conan_info_x64 = install_openssl("x86_64")
-        add_deps(conan_info_x64, library_dirs, include_dirs)
+        conan_build_folder_x64: str = conan_info_x64["graph"]["nodes"]["0"]["build_folder"]
+        library_dirs_x64, include_dirs_x64 = add_deps(conan_info_x64)
         conan_info_arm = install_openssl("armv8")
-        add_deps(conan_info_arm, library_dirs, include_dirs)
+        conan_build_folder_arm: str = conan_info_arm["graph"]["nodes"]["0"]["build_folder"]
+        library_dirs_arm, include_dirs_arm = add_deps(conan_info_arm)
         zlib_required = check_zlib_required(conan_info_x64)
+
+        if arch.endswith("x86_64"):
+            lipo_dir_merge_src = conan_build_folder_x64
+            lipo_dir_merge_dst = conan_build_folder_arm
+        elif arch.endswith("armv8"):
+            lipo_dir_merge_src = conan_build_folder_arm
+            lipo_dir_merge_dst = conan_build_folder_x64
+        else:
+            raise RuntimeError("Invalid arch: " + arch)
+
+        lipo_dir_merge_result = conan_build_folder_arm.replace("armv8", "universal2")
+        shutil.rmtree(lipo_dir_merge_result, ignore_errors=True)
+
+        subprocess.run(
+            [
+                "python3",
+                "lipo-dir-merge/lipo-dir-merge.py",
+                lipo_dir_merge_src,
+                lipo_dir_merge_dst,
+                lipo_dir_merge_result,
+            ]
+        )
+
+        shutil.rmtree(lipo_dir_merge_src)
+        shutil.move(lipo_dir_merge_result, lipo_dir_merge_src)
     else:
         conan_info = install_openssl(arch)
-        add_deps(conan_info, library_dirs, include_dirs)
+        library_dirs, include_dirs = add_deps(conan_info)
         zlib_required = check_zlib_required(conan_info)
 
     # Configure the linker
-    extra_link_args = []
+    extra_link_args: "list[str]" = []
     if sys.platform == "win32":
         # https://github.com/openssl/openssl/blob/master/NOTES-WINDOWS.md#linking-native-applications
         extra_link_args.append("WS2_32.LIB")
@@ -171,12 +204,13 @@ if __name__ == "__main__":
         extra_link_args.append("ADVAPI32.LIB")
         extra_link_args.append("CRYPT32.LIB")
         extra_link_args.append("USER32.LIB")
-        if zlib_required:
-            extra_link_args.append("zlib.lib")
         extra_link_args.append("libcrypto.lib")
     else:
         # Include math library, required for fts5, and crypto.
         extra_link_args.extend(["-lm", "-lcrypto"])
+    
+    if zlib_required:
+        extra_link_args.append("zlib.lib")
 
     module = Extension(
         name="sqlcipher3._sqlite3",

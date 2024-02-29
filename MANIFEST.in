@@ -5,5 +5,6 @@ include setup.py
 recursive-include src *.h
 recursive-include src *.c
 include conanfile.py
+include lipo-dir-merge/lipo-dir-merge.py
 
 global-exclude *~ *.pyc
