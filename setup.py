@@ -30,27 +30,23 @@ include_dirs = ["./src"]
 if sys.platform == "darwin":
     os.environ["CFLAGS"] = "-Qunused-arguments"
 
-def get_arch() -> str:
-    """Get the Conan compilation target architecture.
-
-    If not explicitly set using the `SQLCIPHER3_COMPILE_TARGET` environment variable, this will be
-    determined using the host machine"s platform information.
-    """
-    env_arch = os.getenv("SQLCIPHER3_COMPILE_TARGET", "")
-    if env_arch:
-        return env_arch
-
-    if (
-        platform.architecture()[0] == "32bit"
-        and platform.machine().lower() in (CONAN_ARCHS["x86"] + CONAN_ARCHS["x86_64"])
-    ):
-        return "x86"
-
+def get_native_arch() -> str:
     for k, v in CONAN_ARCHS.items():
         if platform.machine().lower() in v:
             return k
 
-    raise RuntimeError("Unable to determine the compilation target architecture")
+    # Failover
+    return platform.machine().lower()
+
+
+def get_arch() -> str:
+    arch_env = os.getenv("SQLCIPHER3_COMPILE_TARGET")
+    if isinstance(arch_env, str):
+        arch = arch_env
+    else:
+        arch = get_native_arch()
+
+    return arch
 
 
 def install_openssl(arch: str) -> "dict[Any, Any]":
@@ -166,12 +162,12 @@ if __name__ == "__main__":
         library_dirs_arm, include_dirs_arm = add_deps(conan_info_arm)
         zlib_required = check_zlib_required(conan_info_x64)
 
-        if arch.endswith("x86_64"):
+        if get_native_arch() == "x86_64":
             lipo_dir_merge_src = conan_build_folder_x64
             lipo_dir_merge_dst = conan_build_folder_arm
             library_dirs = library_dirs_x64
             include_dirs = include_dirs_x64
-        elif arch.endswith("armv8"):
+        elif get_native_arch() == "armv8":
             lipo_dir_merge_src = conan_build_folder_arm
             lipo_dir_merge_dst = conan_build_folder_x64
             library_dirs = library_dirs_arm
