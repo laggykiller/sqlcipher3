@@ -1,7 +1,8 @@
 sqlcipher/sqlite3.h
 build/*
 dist/*
-sqlcipher3.egg-info/*
+sqlcipher3_wheels.egg-info/*
 _sqlite*.so
 conan_output/*
 __pycache__
+src/sqlcipher/*
