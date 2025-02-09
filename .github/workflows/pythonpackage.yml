@@ -160,10 +160,12 @@ jobs:
         CIBW_BUILD_FRONTEND: build
         CIBW_BUILD: ${{ matrix.cibw_build }}
         CIBW_ARCHS: ${{ matrix.cibw_archs }}
-        CIBW_ENVIRONMENT: SQLCIPHER3_COMPILE_TARGET=${{ matrix.compile_target }}
+        CIBW_ENVIRONMENT: >
+          SQLCIPHER3_COMPILE_TARGET=${{ matrix.compile_target }}
+          PYTHONPATH={project}:$PYTHONPATH
         CIBW_TEST_COMMAND: >
           mv {project}/sqlcipher3 {project}/sqlcipher3_ &&
-          PYTHONPATH={project}:$PYTHONPATH python {project}/tests/ &&
+          python {project}/tests/ &&
           mv {project}/sqlcipher3_ {project}/sqlcipher3
 
     - uses: actions/upload-artifact@v4
