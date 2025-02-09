@@ -2,14 +2,14 @@ import optparse
 import sys
 import unittest
 
-from test.test_backup import suite as backup_suite
-from test.test_dbapi import suite as dbapi_suite
-from test.test_factory import suite as factory_suite
-from test.test_hooks import suite as hooks_suite
-from test.test_regression import suite as regression_suite
-from test.test_transactions import suite as transactions_suite
-from test.test_ttypes import suite as types_suite
-from test.test_userfunctions import suite as userfunctions_suite
+from tests.backup import suite as backup_suite
+from tests.dbapi import suite as dbapi_suite
+from tests.factory import suite as factory_suite
+from tests.hooks import suite as hooks_suite
+from tests.regression import suite as regression_suite
+from tests.transactions import suite as transactions_suite
+from tests.ttypes import suite as types_suite
+from tests.userfunctions import suite as userfunctions_suite
 
 
 def test(verbosity=1, failfast=False):
