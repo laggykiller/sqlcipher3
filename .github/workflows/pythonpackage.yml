@@ -6,7 +6,7 @@ on:
 
 jobs:
   prepare-sqlite:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
 
     steps:
     - uses: actions/checkout@v4
@@ -28,7 +28,7 @@ jobs:
 
   build-sdist:
     needs: prepare-sqlite
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
 
     steps:
     - uses: actions/checkout@v4
@@ -65,11 +65,11 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - os: ubuntu-20.04
+          - os: ubuntu-latest
             cibw_archs: x86_64
             cibw_build: "cp*-manylinux_*"
             compile_target: x86_64
-          - os: ubuntu-20.04
+          - os: ubuntu-latest
             cibw_archs: x86_64
             cibw_build: "cp*-musllinux_*"
             compile_target: x86_64
@@ -81,27 +81,27 @@ jobs:
             cibw_archs: aarch64
             cibw_build: "cp*-musllinux_*"
             compile_target: armv8
-          - os: ubuntu-20.04
+          - os: ubuntu-latest
             cibw_archs: i686
             cibw_build: "cp*-manylinux_*"
             compile_target: x86
-          - os: ubuntu-20.04
+          - os: ubuntu-latest
             cibw_archs: i686
             cibw_build: "cp*-musllinux_*"
             compile_target: x86
-          - os: ubuntu-20.04
+          - os: ubuntu-latest
             cibw_archs: ppc64le
             cibw_build: "cp*-manylinux_*"
             compile_target: ppc64le
-          - os: ubuntu-20.04
+          - os: ubuntu-latest
             cibw_archs: ppc64le
             cibw_build: "cp*-musllinux_*"
             compile_target: ppc64le
-          - os: ubuntu-20.04
+          - os: ubuntu-latest
             cibw_archs: s390x
             cibw_build: "cp*-manylinux_*"
             compile_target: s390x
-          - os: ubuntu-20.04
+          - os: ubuntu-latest
             cibw_archs: s390x
             cibw_build: "cp*-musllinux_*"
             compile_target: s390x
@@ -144,6 +144,10 @@ jobs:
       uses: docker/setup-qemu-action@v3
       with:
         platforms: all
+        # This should be temporary
+        # xref https://github.com/docker/setup-qemu-action/issues/188
+        # xref https://github.com/tonistiigi/binfmt/issues/215
+        image: tonistiigi/binfmt:qemu-v8.1.5
 
     - uses: actions/download-artifact@v4
       with:
@@ -159,7 +163,7 @@ jobs:
         CIBW_ENVIRONMENT: SQLCIPHER3_COMPILE_TARGET=${{ matrix.compile_target }}
         CIBW_TEST_COMMAND: >
           mv {project}/sqlcipher3 {project}/sqlcipher3_ &&
-          PYTHONPATH=.:$PYTHONPATH python tests/
+          PYTHONPATH=.:$PYTHONPATH python {project}/tests/ &&
           mv {project}/sqlcipher3_ {project}/sqlcipher3
 
     - uses: actions/upload-artifact@v4
@@ -168,7 +172,7 @@ jobs:
 
   upload-pypi:
     needs: [build-wheels, build-sdist]
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
 
     steps:
       - uses: actions/download-artifact@v4
