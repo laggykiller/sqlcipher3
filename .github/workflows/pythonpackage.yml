@@ -163,7 +163,7 @@ jobs:
         CIBW_ENVIRONMENT: SQLCIPHER3_COMPILE_TARGET=${{ matrix.compile_target }}
         CIBW_TEST_COMMAND: >
           mv {project}/sqlcipher3 {project}/sqlcipher3_ &&
-          PYTHONPATH=.:$PYTHONPATH python {project}/tests/ &&
+          PYTHONPATH={project}:$PYTHONPATH python {project}/tests/ &&
           mv {project}/sqlcipher3_ {project}/sqlcipher3
 
     - uses: actions/upload-artifact@v4
