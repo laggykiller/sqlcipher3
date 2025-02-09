@@ -1,6 +1,9 @@
 import optparse
 import sys
 import unittest
+from os.path import dirname
+
+sys.path.append(dirname(dirname(__file__)))
 
 from tests.backup import suite as backup_suite
 from tests.dbapi import suite as dbapi_suite
