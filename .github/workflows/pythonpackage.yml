@@ -6,10 +6,10 @@ on:
 
 jobs:
   prepare-sqlite:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
       with:
         submodules: true
 
@@ -19,7 +19,7 @@ jobs:
         LIBS="-lm" ./configure --disable-tcl --enable-tempstore=always
         make sqlite3.c
 
-    - uses: actions/upload-artifact@v3
+    - uses: actions/upload-artifact@v4
       with:
         name: sqlite-amalgamation
         path: |
@@ -28,10 +28,10 @@ jobs:
 
   build-sdist:
     needs: prepare-sqlite
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
       with:
         submodules: true
 
@@ -39,7 +39,7 @@ jobs:
       with:
         python-version: 3.8
 
-    - uses: actions/download-artifact@v3
+    - uses: actions/download-artifact@v4
       with:
         name: sqlite-amalgamation
         path: ./src/sqlcipher
@@ -54,7 +54,7 @@ jobs:
         python -m unittest &&
         mv sqlcipher3_ sqlcipher3
 
-    - uses: actions/upload-artifact@v3
+    - uses: actions/upload-artifact@v4
       with:
         path: dist/sqlcipher3-wheels-*.tar.gz
 
@@ -65,73 +65,73 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - os: ubuntu-20.04
+          - os: ubuntu-latest
             cibw_archs: x86_64
             cibw_build: "cp*-manylinux_*"
             compile_target: x86_64
-          - os: ubuntu-20.04
+          - os: ubuntu-latest
             cibw_archs: x86_64
             cibw_build: "cp*-musllinux_*"
             compile_target: x86_64
-          - os: ubuntu-20.04
+          - os: ubuntu-24.04-arm
             cibw_archs: aarch64
             cibw_build: "cp*-manylinux_*"
             compile_target: armv8
-          - os: ubuntu-20.04
+          - os: ubuntu-24.04-arm
             cibw_archs: aarch64
             cibw_build: "cp*-musllinux_*"
             compile_target: armv8
-          - os: ubuntu-20.04
+          - os: ubuntu-latest
             cibw_archs: i686
             cibw_build: "cp*-manylinux_*"
             compile_target: x86
-          - os: ubuntu-20.04
+          - os: ubuntu-latest
             cibw_archs: i686
             cibw_build: "cp*-musllinux_*"
             compile_target: x86
-          - os: ubuntu-20.04
+          - os: ubuntu-latest
             cibw_archs: ppc64le
             cibw_build: "cp*-manylinux_*"
             compile_target: ppc64le
-          - os: ubuntu-20.04
+          - os: ubuntu-latest
             cibw_archs: ppc64le
             cibw_build: "cp*-musllinux_*"
             compile_target: ppc64le
-          - os: ubuntu-20.04
+          - os: ubuntu-latest
             cibw_archs: s390x
             cibw_build: "cp*-manylinux_*"
             compile_target: s390x
-          - os: ubuntu-20.04
+          - os: ubuntu-latest
             cibw_archs: s390x
             cibw_build: "cp*-musllinux_*"
             compile_target: s390x
-          - os: windows-2019
+          - os: windows-latest
             cibw_archs: AMD64
             cibw_build: "cp*"
             compile_target: x86_64
-          - os: windows-2019
+          - os: windows-latest
             cibw_archs: x86
             cibw_build: "cp*"
             compile_target: x86
-          - os: windows-2019
+          - os: windows-latest
             cibw_archs: ARM64
             cibw_build: "cp*"
             compile_target: armv8
-          - os: macos-12
+          - os: macos-13
             cibw_archs: x86_64
             cibw_build: "cp*"
             compile_target: x86_64
-          - os: macos-14
+          - os: macos-latest
             cibw_archs: arm64
             cibw_build: "cp*"
             compile_target: armv8
-          - os: macos-14
+          - os: macos-latest
             cibw_archs: universal2
             cibw_build: "cp*"
             compile_target: universal2
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
       with:
         submodules: true
 
@@ -141,17 +141,17 @@ jobs:
 
     - name: Set up QEMU
       if: runner.os == 'Linux'
-      uses: docker/setup-qemu-action@v2
+      uses: docker/setup-qemu-action@v3
       with:
         platforms: all
 
-    - uses: actions/download-artifact@v3
+    - uses: actions/download-artifact@v4
       with:
         name: sqlite-amalgamation
         path: ./src/sqlcipher
 
     - name: Build wheels for ${{ matrix.os }} ${{ matrix.cibw_archs }} ${{ matrix.cibw_build }}
-      uses: pypa/cibuildwheel@v2.16.5
+      uses: pypa/cibuildwheel@v2.22.0
       env:
         CIBW_BUILD_FRONTEND: build
         CIBW_BUILD: ${{ matrix.cibw_build }}
@@ -162,16 +162,16 @@ jobs:
           python -m unittest discover -s {project} &&
           mv {project}/sqlcipher3_ {project}/sqlcipher3
 
-    - uses: actions/upload-artifact@v3
+    - uses: actions/upload-artifact@v4
       with:
         path: ./wheelhouse/*.whl
 
   upload-pypi:
     needs: [build-wheels, build-sdist]
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
         with:
           name: artifact
           path: dist
