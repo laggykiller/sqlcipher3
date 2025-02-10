@@ -69,66 +69,82 @@ jobs:
             cibw_archs: x86_64
             cibw_build: "cp*-manylinux_*"
             compile_target: x86_64
+            out: x86_64-manylinux
           - os: ubuntu-latest
             cibw_archs: x86_64
             cibw_build: "cp*-musllinux_*"
             compile_target: x86_64
+            out: x86_64-musllinux
           - os: ubuntu-24.04-arm
             cibw_archs: aarch64
             cibw_build: "cp*-manylinux_*"
             compile_target: armv8
+            out: armv8-manylinux
           - os: ubuntu-24.04-arm
             cibw_archs: aarch64
             cibw_build: "cp*-musllinux_*"
             compile_target: armv8
+            out: armv8-musllinux
           - os: ubuntu-latest
             cibw_archs: i686
             cibw_build: "cp*-manylinux_*"
             compile_target: x86
+            out: x86-manylinux
           - os: ubuntu-latest
             cibw_archs: i686
             cibw_build: "cp*-musllinux_*"
             compile_target: x86
+            out: x86-musllinux
           - os: ubuntu-latest
             cibw_archs: ppc64le
             cibw_build: "cp*-manylinux_*"
             compile_target: ppc64le
+            out: pp64le-manylinux
           - os: ubuntu-latest
             cibw_archs: ppc64le
             cibw_build: "cp*-musllinux_*"
             compile_target: ppc64le
+            out: ppc64le-musllinux
           - os: ubuntu-latest
             cibw_archs: s390x
             cibw_build: "cp*-manylinux_*"
             compile_target: s390x
+            out: s390x-manylinux
           - os: ubuntu-latest
             cibw_archs: s390x
             cibw_build: "cp*-musllinux_*"
             compile_target: s390x
+            out: s390x-musllinux
           - os: windows-latest
             cibw_archs: AMD64
             cibw_build: "cp*"
             compile_target: x86_64
+            out: x86_64-windows
           - os: windows-latest
             cibw_archs: x86
             cibw_build: "cp*"
             compile_target: x86
+            out: x86-windows
           - os: windows-latest
             cibw_archs: ARM64
             cibw_build: "cp*"
             compile_target: armv8
+            out: armv8-windows
           - os: macos-13
             cibw_archs: x86_64
             cibw_build: "cp*"
             compile_target: x86_64
+            out: x86_64-macos
           - os: macos-latest
             cibw_archs: arm64
             cibw_build: "cp*"
             compile_target: armv8
+            out: armv8-macos
           - os: macos-latest
             cibw_archs: universal2
             cibw_build: "cp*"
             compile_target: universal2
+            out: universal2-macos
 
     steps:
     - uses: actions/checkout@v4
@@ -168,7 +184,7 @@ jobs:
 
     - uses: actions/upload-artifact@v4
       with:
-        name: wheels-${{ matrix.runs-on }}
+        name: wheels-${{ matrix.out }}
         path: ./wheelhouse/*.whl
 
   upload-pypi:
