@@ -26,6 +26,7 @@ requires = [
     "conan>=2.0",
     "setuptools>=45",
     "wheel",
+    "lipomerge",
 ]
 build-backend = "setuptools.build_meta"
 

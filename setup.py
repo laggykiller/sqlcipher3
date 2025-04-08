@@ -181,7 +181,8 @@ if __name__ == "__main__":
         subprocess.run(
             [
                 "python3",
-                "lipo-dir-merge/lipo-dir-merge.py",
+                "-m",
+                "lipomerge",
                 lipo_dir_merge_src,
                 lipo_dir_merge_dst,
                 lipo_dir_merge_result,
