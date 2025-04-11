@@ -25,8 +25,7 @@ homepage = "https://github.com/laggykiller/sqlcipher3"
 requires = [
     "conan>=2.0",
     "setuptools>=45",
-    "wheel",
-    "lipomerge",
+    "lipomerge>=0.1.1",
 ]
 build-backend = "setuptools.build_meta"
 
