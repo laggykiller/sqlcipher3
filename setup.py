@@ -143,6 +143,8 @@ if __name__ == "__main__":
         ("SQLITE_HAS_CODEC", "1"),
         ("HAS_CODEC", "1"),
         ("SQLITE_TEMP_STORE", "2"),
+        ("SQLITE_EXTRA_INIT", "sqlcipher_extra_init"),
+        ("SQLITE_EXTRA_SHUTDOWN", "sqlcipher_extra_shutdown"),
         # Increase the maximum number of "host parameters".
         ("SQLITE_MAX_VARIABLE_NUMBER", "250000"),
         # Additional nice-to-have.
