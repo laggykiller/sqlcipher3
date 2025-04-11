@@ -16,7 +16,7 @@ jobs:
     - if: steps.sqlite-amalgamation.outputs.cache-hit != 'true'
       run: |
         cd sqlcipher/
-        LIBS="-lm" ./configure --disable-tcl --with-tempstore=yes
+        LIBS="-lm" ./configure --disable-tcl --enable-tempstore=yes
         make sqlite3.c
 
     - uses: actions/upload-artifact@v4
