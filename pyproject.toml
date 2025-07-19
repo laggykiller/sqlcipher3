@@ -1,6 +1,6 @@
 [project]
 name = "sqlcipher3-wheels"
-version = "0.5.4.post0"
+version = "0.5.5"
 description = "DB-API 2.0 interface for SQLCipher 3.x"
 readme = { content-type = "text/markdown", file = "README.md" }
 authors = [{ name = "Charles Leifer", email = "coleifer@gmail.com" }]
