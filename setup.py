@@ -128,20 +128,19 @@ def quote_argument(arg: str) -> str:
 if __name__ == "__main__":
     define_macros: "list[tuple[str, Optional[str]]]" = [
         ("MODULE_NAME", quote_argument("sqlcipher3.dbapi2")),
-        ("ENABLE_FTS3", "1"),
-        ("ENABLE_FTS3_PARENTHESIS", "1"),
-        ("ENABLE_FTS4", "1"),
-        ("ENABLE_FTS5", "1"),
-        ("ENABLE_JSON1", "1"),
-        ("ENABLE_LOAD_EXTENSION", "1"),
-        ("ENABLE_RTREE", "1"),
-        ("ENABLE_STAT4", "1"),
-        ("ENABLE_UPDATE_DELETE_LIMIT", "1"),
-        ("SOUNDEX", "1"),
-        ("USE_URI", "1"),
+        ("SQLITE_ENABLE_FTS3", "1"),
+        ("SQLITE_ENABLE_FTS3_PARENTHESIS", "1"),
+        ("SQLITE_ENABLE_FTS4", "1"),
+        ("SQLITE_ENABLE_FTS5", "1"),
+        ("SQLITE_ENABLE_JSON1", "1"),
+        ("SQLITE_ENABLE_LOAD_EXTENSION", "1"),
+        ("SQLITE_ENABLE_RTREE", "1"),
+        ("SQLITE_ENABLE_STAT4", "1"),
+        ("SQLITE_ENABLE_UPDATE_DELETE_LIMIT", "1"),
+        ("SQLITE_SOUNDEX", "1"),
+        ("SQLITE_USE_URI", "1"),
         # Required for SQLCipher.
         ("SQLITE_HAS_CODEC", "1"),
-        ("HAS_CODEC", "1"),
         ("SQLITE_TEMP_STORE", "2"),
         # Increase the maximum number of "host parameters".
         ("SQLITE_MAX_VARIABLE_NUMBER", "250000"),
@@ -227,7 +226,7 @@ if __name__ == "__main__":
         # With pyproject.toml, all are not necessary except ext_modules
         # However, they are kept for building python 3.6 wheels
         name="sqlcipher3-wheels",
-        version="0.5.4.post0",
+        version="0.5.5",
         package_dir={"sqlcipher3": "sqlcipher3"},
         packages=["sqlcipher3"],
         ext_modules=[module],
