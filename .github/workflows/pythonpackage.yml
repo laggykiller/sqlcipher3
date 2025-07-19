@@ -97,24 +97,44 @@ jobs:
             out: x86-musllinux
           - os: ubuntu-latest
             cibw_archs: ppc64le
-            cibw_build: "cp*-manylinux_*"
+            cibw_build: "cp36-manylinux_* cp37-manylinux_* cp38-manylinux_* cp39-manylinux_*"
             compile_target: ppc64le
-            out: pp64le-manylinux
+            out: pp64le-manylinux-1
           - os: ubuntu-latest
             cibw_archs: ppc64le
-            cibw_build: "cp*-musllinux_*"
+            cibw_build: "cp310-manylinux_* cp311-manylinux_* cp312-manylinux_* cp313-manylinux_*"
             compile_target: ppc64le
-            out: ppc64le-musllinux
+            out: pp64le-manylinux-2
+          - os: ubuntu-latest
+            cibw_archs: ppc64le
+            cibw_build: "cp36-musllinux_* cp37-musllinux_* cp38-musllinux_* cp39-musllinux_*"
+            compile_target: ppc64le
+            out: ppc64le-musllinux-1
+          - os: ubuntu-latest
+            cibw_archs: ppc64le
+            cibw_build: "cp310-musllinux_* cp311-musllinux_* cp312-musllinux_* cp313-musllinux_*"
+            compile_target: ppc64le
+            out: ppc64le-musllinux-2
           - os: ubuntu-latest
             cibw_archs: s390x
-            cibw_build: "cp*-manylinux_*"
+            cibw_build: "cp36-manylinux_* cp37-manylinux_* cp38-manylinux_* cp39-manylinux_*"
             compile_target: s390x
-            out: s390x-manylinux
+            out: s390x-manylinux-1
           - os: ubuntu-latest
             cibw_archs: s390x
-            cibw_build: "cp*-musllinux_*"
+            cibw_build: "cp310-manylinux_* cp311-manylinux_* cp312-manylinux_* cp313-manylinux_*"
             compile_target: s390x
-            out: s390x-musllinux
+            out: s390x-manylinux-2
+          - os: ubuntu-latest
+            cibw_archs: s390x
+            cibw_build: "cp36-musllinux_* cp37-musllinux_* cp38-musllinux_* cp39-musllinux_*"
+            compile_target: s390x
+            out: s390x-musllinux-1
+          - os: ubuntu-latest
+            cibw_archs: s390x
+            cibw_build: "cp310-musllinux_* cp311-musllinux_* cp312-musllinux_* cp313-musllinux_*"
+            compile_target: s390x
+            out: s390x-musllinux-2
           - os: windows-latest
             cibw_archs: AMD64
             cibw_build: "cp*"
@@ -171,7 +191,7 @@ jobs:
         path: ./src/sqlcipher
 
     - name: Build wheels for ${{ matrix.os }} ${{ matrix.cibw_archs }} ${{ matrix.cibw_build }}
-      uses: pypa/cibuildwheel@v2.23.2
+      uses: pypa/cibuildwheel@v2.23.3
       env:
         CIBW_BUILD_FRONTEND: build
         CIBW_BUILD: ${{ matrix.cibw_build }}
