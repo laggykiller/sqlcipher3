@@ -3,12 +3,14 @@ name = "sqlcipher3-wheels"
 version = "0.5.5"
 description = "DB-API 2.0 interface for SQLCipher 3.x"
 readme = { content-type = "text/markdown", file = "README.md" }
-authors = [{ name = "Charles Leifer", email = "coleifer@gmail.com" }]
-license = { text = "zlib/libpng" }
+authors = [
+    { name = "Charles Leifer", email = "coleifer@gmail.com" },
+    { name = "laggykiller", email = "chaudominic2@gmail.com" }
+]
+license = "Zlib"
 classifiers = [
     "Development Status :: 4 - Beta",
     "Intended Audience :: Developers",
-    "License :: OSI Approved :: zlib/libpng License",
     "Operating System :: MacOS :: MacOS X",
     "Operating System :: Microsoft :: Windows",
     "Operating System :: POSIX",
