@@ -26,10 +26,6 @@ sources = glob("src/*.c") + ["src/sqlcipher/sqlite3.c"]
 library_dirs = []
 include_dirs = ["./src"]
 
-# Work around clang raising hard error for unused arguments
-if sys.platform == "darwin":
-    os.environ["CFLAGS"] = "-Qunused-arguments"
-
 def get_native_arch() -> str:
     for k, v in CONAN_ARCHS.items():
         if platform.machine().lower() in v:
@@ -53,6 +49,7 @@ def install_openssl(arch: str) -> "dict[Any, Any]":
     """Install openssl using Conan.
     """
     settings: list[str] = []
+    options: list[str] = []
 
     if platform.system() == "Windows":
         settings.append("os=Windows")
@@ -66,8 +63,8 @@ def install_openssl(arch: str) -> "dict[Any, Any]":
         settings.append("compiler.libcxx=libc++")
     elif platform.system() == "Linux":
         settings.append("os=Linux")
-
     settings.append(f"arch={arch}")
+    options.append("openssl/*:no_zlib=True")
 
     build = ["missing"]
     if os.path.isdir("/lib") and any(e.startswith("libc.musl") for e in os.listdir("/lib")):
@@ -75,13 +72,15 @@ def install_openssl(arch: str) -> "dict[Any, Any]":
         build.append("openssl*")
 
     subprocess.run(["conan", "profile", "detect", "-f"])
+    # Latest openssl need center2.conan.io instead of center.conan.io
+    subprocess.run(["conan", "remote", "update", "conancenter", "--url=https://center2.conan.io"])
 
     conan_output = os.path.join("conan_output", arch)
-
     result = subprocess.run([
         "conan", "install", 
         *[x for s in settings for x in ("-s", s)],
         *[x for b in build for x in ("-b", b)],
+        *[x for o in options for x in ("-o", o)],
         "-of", conan_output, "--deployer=direct_deploy", "--format=json", "."
         ], stdout=subprocess.PIPE).stdout.decode()
     conan_info = json.loads(result)
@@ -102,15 +101,6 @@ def add_deps(conan_info: "dict[Any, Any]") -> "tuple[list[str], list[str]]":
         include_dirs.append(os.path.join(package_folder, "include"))
     
     return library_dirs, include_dirs
-
-def check_zlib_required(conan_info: "dict[Any, Any]") -> bool:
-    """Check if zlib is required (openssl3)
-    """
-    for dep in conan_info["graph"]["nodes"].values():
-        if dep.get("name") == "zlib":
-            return True
-    
-    return False
 
 def quote_argument(arg: str) -> str:
     is_cibuildwheel = os.environ.get("CIBUILDWHEEL", "0") == "1"
@@ -159,7 +149,6 @@ if __name__ == "__main__":
         conan_info_arm = install_openssl("armv8")
         conan_build_folder_arm: str = conan_info_arm["graph"]["nodes"]["0"]["build_folder"]
         library_dirs_arm, include_dirs_arm = add_deps(conan_info_arm)
-        zlib_required = check_zlib_required(conan_info_x64)
 
         if get_native_arch() == "x86_64":
             lipo_dir_merge_src = conan_build_folder_x64
@@ -193,7 +182,8 @@ if __name__ == "__main__":
     else:
         conan_info = install_openssl(arch)
         library_dirs, include_dirs = add_deps(conan_info)
-        zlib_required = check_zlib_required(conan_info)
+
+    extra_compile_args: "list[str]" = ["-Qunused-arguments"] if sys.platform == "darwin" else []
 
     # Configure the linker
     extra_link_args: "list[str]" = []
@@ -208,9 +198,6 @@ if __name__ == "__main__":
     else:
         # Include math library, required for fts5, and crypto.
         extra_link_args.extend(["-lm", "-lcrypto"])
-    
-    if zlib_required:
-        extra_link_args.append("zlib.lib")
 
     module = Extension(
         name="sqlcipher3._sqlite3",
@@ -218,6 +205,7 @@ if __name__ == "__main__":
         define_macros=define_macros,
         library_dirs=library_dirs,
         include_dirs=include_dirs,
+        extra_compile_args=extra_compile_args,
         extra_link_args=extra_link_args,
         language="c",
     )
