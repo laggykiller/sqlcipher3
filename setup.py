@@ -135,6 +135,7 @@ if __name__ == "__main__":
         ("SQLITE_THREADSAFE", "1"),
         ("SQLITE_EXTRA_INIT", "sqlcipher_extra_init"),
         ("SQLITE_EXTRA_SHUTDOWN", "sqlcipher_extra_shutdown"),
+        ("HAVE_STDINT_H", "1"),
         # Increase the maximum number of "host parameters".
         ("SQLITE_MAX_VARIABLE_NUMBER", "250000"),
         # Additional nice-to-have.
@@ -142,9 +143,6 @@ if __name__ == "__main__":
         ("SQLITE_DEFAULT_CACHE_SIZE", "-8000"),
         ("inline", "__inline"),
     ]
-
-    if platform.system() == "Linux":
-        define_macros.append(("HAVE_STDINT_H", "1"))
 
     # Configure the compiler
     arch = get_arch()
