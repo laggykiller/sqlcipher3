@@ -143,6 +143,9 @@ if __name__ == "__main__":
         ("inline", "__inline"),
     ]
 
+    if platform.system() == "Linux":
+        define_macros.append(("HAVE_STDINT_H", "1"))
+
     # Configure the compiler
     arch = get_arch()
     if arch == "universal2":

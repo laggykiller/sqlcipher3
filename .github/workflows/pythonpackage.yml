@@ -198,7 +198,7 @@ jobs:
         CIBW_BUILD: ${{ matrix.cibw_build }}
         CIBW_ARCHS: ${{ matrix.cibw_archs }}
         CIBW_ENVIRONMENT: SQLCIPHER3_COMPILE_TARGET=${{ matrix.compile_target }}
-        CIBW_BEFORE_ALL_LINUX: yum install -y perl-core
+        CIBW_BEFORE_ALL_LINUX: dnf -y install perl-core
         CIBW_TEST_COMMAND: >
           mv {project}/sqlcipher3 {project}/sqlcipher3_ &&
           python {project}/tests/ &&
