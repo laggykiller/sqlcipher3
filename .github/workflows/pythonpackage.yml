@@ -69,101 +69,121 @@ jobs:
           - os: ubuntu-latest
             cibw_archs: x86_64
             cibw_build: "cp*-manylinux_*"
+            cibw_skip: ""
             compile_target: x86_64
             out: x86_64-manylinux
           - os: ubuntu-latest
             cibw_archs: x86_64
             cibw_build: "cp*-musllinux_*"
+            cibw_skip: ""
             compile_target: x86_64
             out: x86_64-musllinux
           - os: ubuntu-24.04-arm
             cibw_archs: aarch64
             cibw_build: "cp*-manylinux_*"
+            cibw_skip: ""
             compile_target: armv8
             out: armv8-manylinux
           - os: ubuntu-24.04-arm
             cibw_archs: aarch64
             cibw_build: "cp*-musllinux_*"
+            cibw_skip: ""
             compile_target: armv8
             out: armv8-musllinux
           - os: ubuntu-latest
             cibw_archs: i686
             cibw_build: "cp*-manylinux_*"
+            cibw_skip: ""
             compile_target: x86
             out: x86-manylinux
           - os: ubuntu-latest
             cibw_archs: i686
             cibw_build: "cp*-musllinux_*"
+            cibw_skip: ""
             compile_target: x86
             out: x86-musllinux
           - os: ubuntu-latest
             cibw_archs: ppc64le
-            cibw_build: "cp36-manylinux_* cp37-manylinux_* cp38-manylinux_* cp39-manylinux_*"
+            cibw_build: "cp38-manylinux_* cp39-manylinux_* cp310-manylinux_* cp311-manylinux_*"
+            cibw_skip: ""
             compile_target: ppc64le
             out: pp64le-manylinux-1
           - os: ubuntu-latest
             cibw_archs: ppc64le
-            cibw_build: "cp310-manylinux_* cp311-manylinux_* cp312-manylinux_* cp313-manylinux_*"
+            cibw_build: "cp*-manylinux_*"
+            cibw_skip: "cp38-manylinux_* cp39-manylinux_* cp310-manylinux_* cp311-manylinux_*"
             compile_target: ppc64le
             out: pp64le-manylinux-2
           - os: ubuntu-latest
             cibw_archs: ppc64le
-            cibw_build: "cp36-musllinux_* cp37-musllinux_* cp38-musllinux_* cp39-musllinux_*"
+            cibw_build: "cp38-musllinux_* cp39-musllinux_* cp310-musllinux_* cp311-musllinux_*"
+            cibw_skip: ""
             compile_target: ppc64le
             out: ppc64le-musllinux-1
           - os: ubuntu-latest
             cibw_archs: ppc64le
-            cibw_build: "cp310-musllinux_* cp311-musllinux_* cp312-musllinux_* cp313-musllinux_*"
+            cibw_build: "cp*-musllinux_*"
+            cibw_skip: "cp38-musllinux_* cp39-musllinux_* cp310-musllinux_* cp311-musllinux_*"
             compile_target: ppc64le
             out: ppc64le-musllinux-2
           - os: ubuntu-latest
             cibw_archs: s390x
-            cibw_build: "cp36-manylinux_* cp37-manylinux_* cp38-manylinux_* cp39-manylinux_*"
+            cibw_build: "cp38-manylinux_* cp39-manylinux_* cp310-manylinux_* cp311-manylinux_*"
+            cibw_skip: ""
             compile_target: s390x
             out: s390x-manylinux-1
           - os: ubuntu-latest
             cibw_archs: s390x
-            cibw_build: "cp310-manylinux_* cp311-manylinux_* cp312-manylinux_* cp313-manylinux_*"
+            cibw_build: "cp*-manylinux_*"
+            cibw_skip: "cp38-manylinux_* cp39-manylinux_* cp310-manylinux_* cp311-manylinux_*"
             compile_target: s390x
             out: s390x-manylinux-2
           - os: ubuntu-latest
             cibw_archs: s390x
-            cibw_build: "cp36-musllinux_* cp37-musllinux_* cp38-musllinux_* cp39-musllinux_*"
+            cibw_build: "cp38-musllinux_* cp39-musllinux_* cp310-musllinux_* cp311-musllinux_*"
+            cibw_skip: ""
             compile_target: s390x
             out: s390x-musllinux-1
           - os: ubuntu-latest
             cibw_archs: s390x
-            cibw_build: "cp310-musllinux_* cp311-musllinux_* cp312-musllinux_* cp313-musllinux_*"
+            cibw_build: "cp*-musllinux_*"
+            cibw_skip: "cp38-musllinux_* cp39-musllinux_* cp310-musllinux_* cp311-musllinux_*"
             compile_target: s390x
             out: s390x-musllinux-2
           - os: windows-latest
             cibw_archs: AMD64
             cibw_build: "cp*"
+            cibw_skip: ""
             compile_target: x86_64
             out: x86_64-windows
           - os: windows-latest
             cibw_archs: x86
             cibw_build: "cp*"
+            cibw_skip: ""
             compile_target: x86
             out: x86-windows
           - os: windows-latest
             cibw_archs: ARM64
             cibw_build: "cp*"
+            cibw_skip: ""
             compile_target: armv8
             out: armv8-windows
           - os: macos-13
             cibw_archs: x86_64
             cibw_build: "cp*"
+            cibw_skip: ""
             compile_target: x86_64
             out: x86_64-macos
           - os: macos-latest
             cibw_archs: arm64
             cibw_build: "cp*"
+            cibw_skip: ""
             compile_target: armv8
             out: armv8-macos
           - os: macos-latest
             cibw_archs: universal2
             cibw_build: "cp*"
+            cibw_skip: ""
             compile_target: universal2
             out: universal2-macos
 
@@ -192,10 +212,11 @@ jobs:
         path: ./src/sqlcipher
 
     - name: Build wheels for ${{ matrix.os }} ${{ matrix.cibw_archs }} ${{ matrix.cibw_build }}
-      uses: pypa/cibuildwheel@v2.23.3
+      uses: pypa/cibuildwheel@v3.3.0
       env:
         CIBW_BUILD_FRONTEND: build
         CIBW_BUILD: ${{ matrix.cibw_build }}
+        CIBW_SKIP: ${{ matrix.cibw_skip }}
         CIBW_ARCHS: ${{ matrix.cibw_archs }}
         CIBW_ENVIRONMENT: SQLCIPHER3_COMPILE_TARGET=${{ matrix.compile_target }}
         CIBW_BEFORE_ALL_LINUX: command -v yum >/dev/null && yum -y install perl-core || command -v apk >/dev/null && apk add perl || true
