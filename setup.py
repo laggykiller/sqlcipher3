@@ -5,7 +5,6 @@ import os
 import subprocess
 import json
 import sys
-import shutil
 import platform
 from glob import glob
 from setuptools import setup, Extension
@@ -147,45 +146,11 @@ if __name__ == "__main__":
     # Configure the compiler
     arch = get_arch()
     if arch == "universal2":
-        conan_info_x64 = install_openssl("x86_64")
-        conan_build_folder_x64: str = conan_info_x64["graph"]["nodes"]["0"]["build_folder"]
-        library_dirs_x64, include_dirs_x64 = add_deps(conan_info_x64)
-        conan_info_arm = install_openssl("armv8")
-        conan_build_folder_arm: str = conan_info_arm["graph"]["nodes"]["0"]["build_folder"]
-        library_dirs_arm, include_dirs_arm = add_deps(conan_info_arm)
-
-        if get_native_arch() == "x86_64":
-            lipo_dir_merge_src = conan_build_folder_x64
-            lipo_dir_merge_dst = conan_build_folder_arm
-            library_dirs = library_dirs_x64
-            include_dirs = include_dirs_x64
-        elif get_native_arch() == "armv8":
-            lipo_dir_merge_src = conan_build_folder_arm
-            lipo_dir_merge_dst = conan_build_folder_x64
-            library_dirs = library_dirs_arm
-            include_dirs = include_dirs_arm
-        else:
-            raise RuntimeError("Invalid arch: " + arch)
-
-        lipo_dir_merge_result = conan_build_folder_arm.replace("armv8", "universal2")
-        shutil.rmtree(lipo_dir_merge_result, ignore_errors=True)
-
-        subprocess.run(
-            [
-                "python3",
-                "-m",
-                "lipomerge",
-                lipo_dir_merge_src,
-                lipo_dir_merge_dst,
-                lipo_dir_merge_result,
-            ]
-        )
-
-        shutil.rmtree(lipo_dir_merge_src)
-        shutil.move(lipo_dir_merge_result, lipo_dir_merge_src)
+        # https://docs.conan.io/2/reference/tools/cmake/cmaketoolchain.html#conan-tools-cmaketoolchain-universal-binaries
+        conan_info = install_openssl("armv8|x86_64")
     else:
         conan_info = install_openssl(arch)
-        library_dirs, include_dirs = add_deps(conan_info)
+    library_dirs, include_dirs = add_deps(conan_info)
 
     extra_compile_args: "list[str]" = ["-Qunused-arguments"] if sys.platform == "darwin" else []
 
