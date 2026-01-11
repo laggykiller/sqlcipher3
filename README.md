@@ -1,6 +1,11 @@
 sqlcipher3
 ==========
 
+*NOTICE*: [Official sqlcipher3](https://github.com/coleifer/sqlcipher3) has merged
+some changes from this fork since 0.6.2 to provide wheels for
+x86, x64, arm64 Windows, MacOS and Linux.
+This fork is kept for providing unofficial wheels for platforms like ppc64le and s390x,
+
 *NOTICE*: This is a fork of [sqlcipher3](https://github.com/coleifer/sqlcipher3)
 which adds github action for creating wheels for Windows, MacOS and Linux.
 The unofficial wheels from this fork are uploaded to `sqlcipher3-wheels` on pypi,
